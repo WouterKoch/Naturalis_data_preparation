@@ -9,9 +9,15 @@ def filter_extensions(csv, extensions):
     print(set(df["extension"].to_list()))
 
     print("Removing files with unsupported extensions:")
-    print(df[~df["extension"].isin(extensions)]["image_url"])
+    print(len(df[~df["extension"].isin(extensions)]), "files")
+
+    print(df[~df["extension"].isin(extensions)]["image_url"].to_list())
 
     df = df[df["extension"].isin(extensions)]
+
+    df.drop(["extension"], axis=1, inplace=True)
+
+
     df.to_csv(csv, index=False)
 
 if __name__ == "__main__":
