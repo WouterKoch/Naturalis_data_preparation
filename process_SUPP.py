@@ -12,7 +12,7 @@ from get_taxa import get_accepted_id
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-def process_supp(inputfiles, outputfolder, datasetname):
+def process_supp(inputfiles, outputfolder, datasetname, checkfolder=None):
 
     data = pd.DataFrame()
     tqdm.pandas()
@@ -21,6 +21,16 @@ def process_supp(inputfiles, outputfolder, datasetname):
         data = pd.concat([data, pd.read_csv(file, on_bad_lines="skip")], ignore_index=True)
 
     data.drop_duplicates(subset=['image_url', 'taxon_full_name'], inplace=True)
+
+    if checkfolder is not None:
+        data["filename"] = data["image_url"].apply(lambda x: x.split("/")[-1])
+        data["exists"] = data["filename"].progress_apply(lambda x: os.path.exists(os.path.join(checkfolder, x)))
+
+        print("Missing files:")
+        print(data[data["exists"] == False]["filename"].to_list())
+
+        data = data[data["exists"]]
+        data.drop(["filename", "exists"], axis=1)
 
     # too_high = data[~data["taxon_full_name"].str.contains(" ")]
     # if len(too_high):
