@@ -110,7 +110,7 @@ def combine(taxonfiles, imagefiles, outputfolder, previousImageList):
     existing_ids = lasttime["old_image_id"].to_list()
 
     images["image_id"] = images.progress_apply(lambda x: x["old_image_id"] if not pd.isna(x["old_image_id"]) else (x["image_id"] if "AO:" in x["image_id"] else generateId(x["image_url"], x["dataset"], existing_ids)) , axis=1)
-    images.drop(["old_image_id"], axis=1, inplace=True)
+    images.drop(["old_image_id","dataset"], axis=1, inplace=True)
 
     images.to_csv(os.path.join(outputfolder, 'images.csv'), index=False)
     # images = images[images['image_url'].apply(lambda x: x in url_replacements.keys())]
